@@ -65,13 +65,19 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *dmenucmd[] = { "rofi", "-show", "drun", NULL };
+static const char *dmenucmd[] = { "dmenu_drun", NULL };
+static const char *roficmd[] = { "rofi", "-show", "drun", NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char* fm_cmd[] = { "caja", NULL };
+static const char* browser_cmd[] = { "firefox", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
+	{ MODKEY|Mod1Mask,              XK_space,  spawn,          {.v = roficmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+        { MODKEY|ShiftMask,             XK_space,  spawn,          {.v = browser_cmd}},
+        { MODKEY|ControlMask,           XK_space,  spawn,          {.v = fm_cmd}},
 	// { MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_i,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_n,      focusstack,     {.i = -1 } },

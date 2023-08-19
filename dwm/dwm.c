@@ -618,12 +618,15 @@ configurenotify(XEvent *e)
 		if (updategeom() || dirty) {
 			drw_resize(drw, sw, bh);
 			updatebars();
+                        int i = 0;
 			for (m = mons; m; m = m->next) {
 				for (c = m->clients; c; c = c->next)
 					if (c->isfullscreen)
 						resizeclient(c, m->mx, m->my, m->mw, m->mh);
 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, m->bh);
-				XMoveResizeWindow(dpy, m->extrabarwin, m->wx, m->eby, m->ww, m->bh);
+                                if (i < 1)
+				    XMoveResizeWindow(dpy, m->extrabarwin, m->wx, m->eby, m->ww, m->bh);
+                                i++;
 			}
 			focus(NULL);
 			arrange(NULL);
@@ -829,9 +832,9 @@ void
 drawbars(void)
 {
 	Monitor *m;
-
-	for (m = mons; m; m = m->next)
-		drawbar(m);
+        
+	for (m = mons; m;  m = m->next )
+                drawbar(m);
 }
 
 void
