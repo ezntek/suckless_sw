@@ -2,33 +2,36 @@
 
 /* appearance */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
-static const unsigned int gappx     = 5;        /* gaps between windows */
-static const unsigned int snap      = 20;       /* snap pixel */
-static const char panel[][20]       = { "xfce4-panel", "Xfce4-panel" }; /* name & cls of panel win */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 0;        /* 0 means bottom bar */
-static const int extrabar = 1;
-static const char statussep = ';';
-static const char *fonts[]          = { "JetBrainsMono Nerd Font:size=11" };
-static const char dmenufont[]       = "monospace:size=12";
-static const char col_gray1[]       = "#1e1e2e";
-static const char col_gray2[]       = "#313244";
-static const char col_gray3[]       = "#45475a";
-static const char col_gray4[]       = "#585b70";
-static const char col_cyan[]        = "#f9e2af";
-static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
-static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
-static const char *alttrayname      = "tray";    /* Polybar tray instance name */
-static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
 
+static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+
+static const unsigned int snap      = 32;       /* snap pixel */
+static const int showbar            = 1;        /* 0 means no bar */
+static const int topbar             = 1;        /* 0 means bottom bar */
+static	     int smartgaps          = 0;
+static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
+static const int extrabar           = 1;
+static const int statussep          = ';';
+static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
+static const char *altbarcmd        = "$HOME/.config/polybar/start.sh"; /* Alternate bar launch command */
+static const char *fonts[]          = { "Rec Mono Semicasual:size=11" };
+static const char dmenufont[]       = "Rec Mono Semicasual:size=11";
+static const char col_gray1[]       = "#1e2030";
+static const char col_gray2[]       = "#363a4f";
+static const char col_gray3[]       = "#a5adcb";
+static const char col_gray4[]       = "#cad3f5";
+static const char col_cyan[]        = "#8bd5ca";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray1, col_cyan,  col_cyan  },
+	[SchemeSel]  = { col_gray2, col_cyan,  col_cyan  },
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5" };
+static const char* tags[] = { "1", "2", "3", "4", "5" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -36,21 +39,36 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-        { "Gimp",     NULL,       NULL,       0,            1,           -1 },
-        { "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.525; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+
+#define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
+#include "vanitygaps.c"
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "Tile",      tile },    /* first entry is default */
-	{ "Float",      NULL },    /* no layout function means floating behavior */
-	{ "Monocle",      monocle },
+	{ "[]=",      tile },    /* first entry is default */
+	{ "[M]",      monocle },
+	{ "[@]",      spiral },
+	{ "[\\]",     dwindle },
+	{ "H[]",      deck },
+	{ "TTT",      bstack },
+	{ "===",      bstackhoriz },
+	{ "HHH",      grid },
+	{ "###",      nrowgrid },
+	{ "---",      horizgrid },
+	{ ":::",      gaplessgrid },
+	{ "|M|",      centeredmaster },
+	{ ">M>",      centeredfloatingmaster },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ NULL,       NULL },
 };
 
 /* key definitions */
@@ -65,10 +83,12 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
+
+/* commands */
 static const char *dmenucmd[] = { "dmenu_drun", NULL };
 static const char *roficmd[] = { "rofi", "-show", "drun", NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char* fm_cmd[] = { "caja", NULL };
+static const char *termcmd[]  = { "kitty", NULL };
+static const char* fm_cmd[] = { "thunar", NULL };
 static const char* browser_cmd[] = { "firefox", NULL };
 
 static const Key keys[] = {
@@ -76,29 +96,51 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
 	{ MODKEY|Mod1Mask,              XK_space,  spawn,          {.v = roficmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-        { MODKEY|ShiftMask,             XK_space,  spawn,          {.v = browser_cmd}},
-        { MODKEY|ControlMask,           XK_space,  spawn,          {.v = fm_cmd}},
-	// { MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_i,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_n,      focusstack,     {.i = -1 } },
+        { MODKEY|ShiftMask,             XK_Return, spawn,          {.v = browser_cmd}},
+        { MODKEY|ControlMask,           XK_Return, spawn,          {.v = fm_cmd}},
+	// { MODKEY,                    XK_b,      togglebar,      {0} },
+	{ MODKEY,                       XK_i,      focusstackvis,  {.i = +1 } },
+	{ MODKEY,                       XK_n,      focusstackvis,  {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_i,      focusstackhid,  {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_n,      focusstackhid,  {.i = -1 } },
 	{ MODKEY,                       XK_y,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_o,      incnmaster,     {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_n,      setmfact,       {.f = -0.025} },
 	{ MODKEY|ControlMask,           XK_i,      setmfact,       {.f = +0.025} },
-	{ MODKEY,                       XK_t, zoom,           {0} },
-	// { MODKEY,                       XK_Tab,    view,           {0} },
+	{ MODKEY|ControlMask,		XK_u,	   setcfact,	   {.f = -0.3 } },
+	{ MODKEY|ControlMask,		XK_e,	   setcfact,	   {.f = +0.3 } },
+	{ MODKEY,                       XK_t,      zoom,           {0} },
+	{ MODKEY,			XK_f,      fullscreen,	   {0} },
+	{ MODKEY|ShiftMask,		XK_r,      reloadconfig,   {0} },
+	// some gap shit (all hail vanitygaps?)
+	{ MODKEY,	              	XK_equal,  incrgaps,       {.i = +1 } },
+	{ MODKEY,			XK_minus,  incrgaps,       {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_i,      incrigaps,      {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_i,      incrigaps,      {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_o,      incrogaps,      {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_o,      incrogaps,      {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_6,      incrihgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_6,      incrihgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_7,      incrivgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_7,      incrivgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_8,      incrohgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ControlMask,   XK_8,      incrohgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_9,      incrovgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_9,      incrovgaps,     {.i = -1 } },
+
+	// { MODKEY,                    XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_w,      killclient,     {0} },
-	/*{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+	/*{ MODKEY,                     XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },*/
-	// { MODKEY,                       XK_space,  setlayout,      {0} },
-	// { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-	// { MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	// { MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ ControlMask|ShiftMask,       XK_n,  focusmon,       {.i = -1 } },
-	{ ControlMask|ShiftMask,       XK_i, focusmon,       {.i = +1 } },
-	{ ControlMask|Mod1Mask,     XK_n,  tagmon,         {.i = -1 } },
-	{ ControlMask|Mod1Mask,     XK_i, tagmon,         {.i = +1 } },
+	// { MODKEY,                    XK_space,  setlayout,      {0} },
+	// { MODKEY|ShiftMask,          XK_space,  togglefloating, {0} },
+	// { MODKEY,                    XK_0,      view,           {.ui = ~0 } },
+	// { MODKEY|ShiftMask,          XK_0,      tag,            {.ui = ~0 } },
+	{ ControlMask|ShiftMask,       	XK_n,      focusmon,       {.i = -1 } },
+	{ ControlMask|ShiftMask,      	XK_i,      focusmon,       {.i = +1 } },
+	{ ControlMask|Mod1Mask,     	XK_n,	   tagmon,         {.i = -1 } },
+	{ ControlMask|Mod1Mask,     	XK_i,      tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
