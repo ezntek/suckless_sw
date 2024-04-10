@@ -7,11 +7,11 @@ VERSION = 6.4
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
-#X11INC = /usr/X11R6/include
-#X11LIB = /usr/X11R6/lib
+X11INC = /usr/X11R6/include
+X11LIB = /usr/X11R6/lib
 
-X11INC = /usr/include/X11
-X11LIB = /usr/lib/X11
+#X11INC = /usr/include/X11
+#X11LIB = /usr/lib/X11
 
 # Xinerama, comment if you don't want it
 XINERAMALIBS  = -lXinerama
@@ -21,8 +21,8 @@ XINERAMAFLAGS = -DXINERAMA
 FREETYPELIBS = -lfontconfig -lXft
 FREETYPEINC = /usr/include/freetype2
 # OpenBSD (uncomment)
-#FREETYPEINC = ${X11INC}/freetype2
-#MANPREFIX = ${PREFIX}/man
+FREETYPEINC = ${X11INC}/freetype2
+MANPREFIX = ${PREFIX}/man
 
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC}

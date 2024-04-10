@@ -1,0 +1,9 @@
+@@ -1966,7 +1976,7 @@
+ 					m->clients = c->next;
+ 					detachstack(c);
+ 					c->mon = mons;
+-					attach(c);
++					attachbottom(c);
+ 					attachstack(c);
+ 				}
+ 				if (m == selmon)
