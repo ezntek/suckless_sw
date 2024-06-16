@@ -1,0 +1,9 @@
+@@ -2503,7 +2596,7 @@
+ 
+ 	if (term.c.x+width > term.col) {
+ 		tnewline(1);
+-		gp = &term.line[term.c.y][term.c.x];
++		gp = &TLINE(term.c.y)[term.c.x];
+ 	}
+ 
+ 	tsetchar(u, &term.c.attr, term.c.x, term.c.y);

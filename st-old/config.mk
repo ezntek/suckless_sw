@@ -1,11 +1,10 @@
 # st version
-VERSION = 0.9
+VERSION = 0.9.2
 
 # Customize below to fit your system
 
 # paths
 PREFIX = /usr/local
-APPPREFIX = $(PREFIX)/share/applications
 MANPREFIX = $(PREFIX)/share/man
 
 X11INC = /usr/include/X11
@@ -30,12 +29,11 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 
 # OpenBSD:
 #CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600 -D_BSD_SOURCE
-LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
+#LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
        `$(PKG_CONFIG) --libs fontconfig` \
-       `$(PKG_CONFIG) --libs freetype2` \
-       `$(PKG_CONFIG) --libs harfbuzz` \
-       `$(PKG_CONFIG) --libs gd`
+       `$(PKG_CONFIG) --libs freetype2`\
+       `$(PKG_CONFIG) --libs harfbuzz`
 MANPREFIX = ${PREFIX}/man
 
 # compiler and linker
-CC = c99
+# CC = c99
